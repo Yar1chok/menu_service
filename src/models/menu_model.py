@@ -3,8 +3,8 @@ import peewee
 from src.models.db_connection import db
 
 class MenuModel(peewee.Model):
-    munu_item_id = peewee.PrimaryKeyField(
-        db_column="munu_item_id",
+    menu_item_id = peewee.PrimaryKeyField(
+        db_column="menu_item_id",
     )
     name = peewee.CharField(
         max_length=1000,
