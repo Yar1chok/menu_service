@@ -1,3 +1,4 @@
+from typing import List
 import pydantic
 
 class MenuDTO(pydantic.BaseModel):
@@ -5,3 +6,11 @@ class MenuDTO(pydantic.BaseModel):
     price: int
     volume: int
     
+class ProductDTO(pydantic.BaseModel):
+    real_id: int
+    menu_item_id: int
+    amount: int
+
+class ChequeDTO(pydantic.BaseModel):
+    task_id: int
+    product_list: List[ProductDTO]

@@ -3,8 +3,8 @@ import peewee
 from src.models.db_connection import db
 
 class MenuModel(peewee.Model):
-    menu_item_id = peewee.PrimaryKeyField(
-        db_column="menu_item_id",
+    menu_id = peewee.PrimaryKeyField(
+        db_column="menu_id",
     )
     name = peewee.CharField(
         max_length=1000,
@@ -16,7 +16,6 @@ class MenuModel(peewee.Model):
     volume = peewee.IntegerField(
         null=False,
     )
-
     class Meta:
         database = db
         db_table = "menu"

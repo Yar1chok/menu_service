@@ -1,11 +1,11 @@
 
-
-from fastapi import FastAPI
-
+from src.app.custom_app import CustomApp
 from src.routers.menu_router import menu_router
 
 
-app = FastAPI()
+app = CustomApp(
+    title="MenuService"
+)
 
 app.include_router(
     menu_router
