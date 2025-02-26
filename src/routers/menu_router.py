@@ -39,6 +39,9 @@ def get_cheque_item(
     cheque: ChequeDTO,
     menu_processing_service: MenuProcessingService = Depends(get_menu_service),
 ):
-    return menu_processing_service.get_cheque_item(cheque)
+    try:
+        return menu_processing_service.get_cheque_item(cheque)
+    except menu_processing_service.EntityDoesNotExist as e:
+        raise EntityDoesNotExistError(e.model)
 
 

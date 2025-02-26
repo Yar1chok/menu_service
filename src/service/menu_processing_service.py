@@ -1,14 +1,15 @@
 from typing import List
-from dto import ChequeDTO
+from dto import ChequeDTO, ProductDTOandMenuDTO
 from dto import ProductDTO
 from src.repository.menu_repo import MenuRepo
-
+import peewee
 
 class MenuProcessingService:
     class EntityDoesNotExist(Exception):
-        def __init__(self, _model, *args):
+        def __init__(self, _model, *args) -> None:
             super().__init__(*args)
             self.model = _model
+            
     class EntityNoMinimumLength(Exception):
         def __init__(self, _model, *args) -> None:
             super().__init__(*args)
@@ -35,10 +36,24 @@ class MenuProcessingService:
         except self.menu_repo.EntityNoMinimumLength as e:
             raise self.EntityNoMinimumLength(e.model)
 
-    
-    def get_cheque_item(self, cheque: ChequeDTO):
+    def get_cheque_item(
+            self,
+            cheque: ChequeDTO
+        ):
         products: List[ProductDTO] = cheque.product_list
         for product in products:
-            print(product.real_id)
+            try:
+                model_menu = self.menu_repo.get_menu_item(product.real_id)
+                return ProductDTOandMenuDTO(
+                    real_id = product.real_id,
+                    menu_item_id = product.menu_item_id,
+                    amount = product.amount,
+                    name = model_menu.name,
+                    price = model_menu.price,
+                    volume = model_menu.volume,
+                )
+            except self.menu_repo.EntityDoesNotExist as e:
+                raise self.EntityDoesNotExist(e.model)
+                
+
         
-        return 'menu_item'

@@ -2,12 +2,12 @@ from dto import MenuDTO
 from src.models.menu_model import MenuModel
 import peewee
 class MenuRepo:
-    class EntityAlreadyExists(Exception):
-        message = f"Entity with that dish class is already exist in table "
+    class EntityDoesNotExist(Exception):
+        message = f"Entity does not exist in table"
         def __init__(self, _model, *args) -> None:
             super().__init__(*args)
             self.model = _model
-    
+
     class EntityNoMinimumLength(Exception):
         message = "The length of the 'name' field must be at least 3 characters"
         def __init__(self, _model, *args) -> None:
@@ -27,10 +27,10 @@ class MenuRepo:
             self,
             menu_id: int
     ):
-        menu_item = self.menu_model.get(
+        try:
+            menu_item = self.menu_model.get(
                 menu_id=menu_id
             )
-        try:
             return MenuDTO(
                 menu_id=menu_item.menu_id,
                 name=menu_item.name,
@@ -38,7 +38,7 @@ class MenuRepo:
                 volume=menu_item.volume
             )
         except peewee.DoesNotExist:
-            raise self.EntityAlreadyExists(self.menu_model)
+            raise self.EntityDoesNotExist(self.menu_model)
     
     def add_menu_item(
         self, 

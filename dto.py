@@ -14,3 +14,6 @@ class ProductDTO(pydantic.BaseModel):
 class ChequeDTO(pydantic.BaseModel):
     task_id: int
     product_list: List[ProductDTO]
+
+class ProductDTOandMenuDTO(ProductDTO, MenuDTO):
+    pass
