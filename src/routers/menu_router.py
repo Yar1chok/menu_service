@@ -1,8 +1,8 @@
 
 import asyncio
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
+from src.service.data_service import DataService
 from src.service.connection_service import ConnectionService
-from src.models.datastorage import DataStorage
 from src.app.http_exceptions import EntityDoesNotExistError, EntityNoMinimumLength
 from depends import get_data_storage, get_menu_service, get_websocket_manager
 from dto import ChequeDTO
@@ -39,7 +39,7 @@ def add_menu_item(
 def get_cheque_item(
     cheque: ChequeDTO,
     menu_processing_service: MenuProcessingService = Depends(get_menu_service),
-    data_storage: DataStorage = Depends(get_data_storage)
+    data_storage: DataService= Depends(get_data_storage)
 ):
     try:
         res = menu_processing_service.get_cheque_item(cheque)
@@ -51,7 +51,7 @@ def get_cheque_item(
         raise EntityDoesNotExistError(e.model)
     
 @menu_router.get("/get_saved_data")
-def get_saved_data(data_storage: DataStorage = Depends(get_data_storage)):
+def get_saved_data(data_storage: DataService = Depends(get_data_storage)):
     saved_data = data_storage.get_data()
     if saved_data is None:
         raise HTTPException(status_code=404, detail="No data saved yet")
@@ -60,28 +60,21 @@ def get_saved_data(data_storage: DataStorage = Depends(get_data_storage)):
 @menu_router.websocket("/get_saved_data_ws")
 async def get_saved_data_websocket(
     websocket: WebSocket,
-    manager_serivce: ConnectionService = Depends(get_websocket_manager),
-    data_storage: DataStorage = Depends(get_data_storage)
+    connection_serivce: ConnectionService = Depends(get_websocket_manager),
+    data_storage: DataService = Depends(get_data_storage)
 ):
-    await manager_serivce.connect(websocket)
+    await connection_serivce.connect(websocket)
     last_sent_data = None
-
     try:
         while True:
             saved_data = data_storage.get_data()
             if saved_data != last_sent_data:
                 if saved_data is None:
-                    await manager_serivce.broadcast({"error": "No data saved yet"})
+                    await connection_serivce.broadcast({"error": "No data saved yet"})
                 else:
-                    await manager_serivce.broadcast(saved_data.dict())
+                    await connection_serivce.broadcast(saved_data.dict())
                 last_sent_data = saved_data
-
             await asyncio.sleep(0.5) 
     except WebSocketDisconnect:
-        manager_serivce.disconnect(websocket)
-    except Exception as e:
-        print(f"Error: {e}")
-        manager_serivce.disconnect(websocket)
-    finally:
-        manager_serivce.disconnect(websocket)
+        connection_serivce.disconnect(websocket)
 

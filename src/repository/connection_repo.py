@@ -1,4 +1,4 @@
-from fastapi import WebSocket
+from fastapi import WebSocket, WebSocketDisconnect
 
 class ConnectionRepo:
     def __init__(self):
@@ -12,5 +12,13 @@ class ConnectionRepo:
         if websocket in self.active_connections:
             self.active_connections.remove(websocket)
 
-    def get_active_connections(self):
-        return self.active_connections
+    async def broadcast(self, message):
+        disconnected = []
+        for connection in self.active_connections:
+            try:
+                await connection.send_json(message)
+            except WebSocketDisconnect as e:
+                print(f"Error sending message: {e}")
+                disconnected.append(connection)
+        for connection in disconnected:
+            self.remove_connection(connection)
