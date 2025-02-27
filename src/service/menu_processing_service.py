@@ -24,7 +24,6 @@ class MenuProcessingService:
         except self.menu_repo.EntityDoesNotExist as e:
             raise self.EntityDoesNotExist(e.model)
 
-
     def add_menu_item(
         self, 
         name: str, 
