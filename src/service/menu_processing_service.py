@@ -2,7 +2,6 @@ from typing import List
 from dto import ChequeDTO, ProductDTOandMenuDTO
 from dto import ProductDTO
 from src.repository.menu_repo import MenuRepo
-import peewee
 
 class MenuProcessingService:
     class EntityDoesNotExist(Exception):
@@ -39,20 +38,24 @@ class MenuProcessingService:
             self,
             cheque: ChequeDTO
         ):
+        more_menu = []
         products: List[ProductDTO] = cheque.product_list
         for product in products:
             try:
                 model_menu = self.menu_repo.get_menu_item(product.real_id)
-                return ProductDTOandMenuDTO(
+                more_menu.append(ProductDTOandMenuDTO(
                     real_id = product.real_id,
                     menu_item_id = product.menu_item_id,
                     amount = product.amount,
                     name = model_menu.name,
                     price = model_menu.price,
                     volume = model_menu.volume,
-                )
-            except self.menu_repo.EntityDoesNotExist as e:
-                raise self.EntityDoesNotExist(e.model)
+                ).dict())
+            except self.menu_repo.EntityDoesNotExist:
+                pass
+        if len(more_menu) == 0:
+            return '0' 
+        return more_menu
                 
 
         

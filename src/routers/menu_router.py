@@ -72,7 +72,7 @@ async def get_saved_data_websocket(
                 if saved_data is None:
                     await connection_serivce.broadcast({"error": "No data saved yet"})
                 else:
-                    await connection_serivce.broadcast(saved_data.dict())
+                    await connection_serivce.broadcast(saved_data)
                 last_sent_data = saved_data
             await asyncio.sleep(0.5) 
     except WebSocketDisconnect:
