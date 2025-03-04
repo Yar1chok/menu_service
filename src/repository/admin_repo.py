@@ -1,7 +1,5 @@
 from dto import AdminSettings
 import os
-os.getenv("ADMIN_CODE")
-admin_token = os.getenv("ADMIN_TOKEN")
 
 class AdminRepo:
     def __init__(
