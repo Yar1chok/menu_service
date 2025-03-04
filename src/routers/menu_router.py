@@ -1,10 +1,11 @@
 
 import asyncio
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
+from src.service.admin_service import AdminService
 from src.service.data_service import DataService
 from src.service.connection_service import ConnectionService
 from src.app.http_exceptions import EntityDoesNotExistError, EntityNoMinimumLength
-from depends import get_data_storage, get_menu_service, get_websocket_manager
+from depends import get_code, get_data_storage, get_menu_service, get_websocket_manager
 from dto import ChequeDTO
 from src.service.menu_processing_service import MenuProcessingService
 
@@ -78,3 +79,9 @@ async def get_saved_data_websocket(
     except WebSocketDisconnect:
         connection_serivce.disconnect(websocket)
 
+@menu_router.get("/check_code")
+def check_code(
+    code: int,
+    admin_service: AdminService = Depends(get_code)
+):
+    return admin_service.check_code(code)

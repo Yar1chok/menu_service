@@ -1,4 +1,6 @@
-from dto import MenuDTO
+from dto import AdminSettings, MenuDTO
+from src.repository.admin_repo import AdminRepo
+from src.service.admin_service import AdminService
 from src.service.data_service import DataService
 from src.repository.data_repo import DataRepo
 from src.service.connection_service import ConnectionService
@@ -16,6 +18,10 @@ data_service = DataService(data_repo)
 connection_repo = ConnectionRepo()
 connection_service = ConnectionService(connection_repo)
 
+admin_settings = AdminSettings()
+admin_repo = AdminRepo(admin_settings)
+admin_service = AdminService(admin_repo)
+
 def get_menu_service():
     return menu_service
 
@@ -24,3 +30,6 @@ def get_data_storage():
 
 def get_websocket_manager():
     return connection_service
+
+def get_code():
+    return admin_service
